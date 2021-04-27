@@ -1,8 +1,9 @@
-from timeit import default_timer as timerit
+import time
+
 
 class Scheduler:
   def schedule(factory, problemName, dispatchRule):
-      starttime = timerit.timerit()
+      starttime = time.clock()
            
       if (dispatchRule == 'NN'):
           dispatchRule=NN_Rule(factory)
@@ -80,6 +81,6 @@ class Scheduler:
         eq.addEvent(op1)
       eq.run()
       makespan=eq.time
-      endtime = timerit()
+      endtime = time.clock() 
       totaltime = endtime - starttime
       return makespan,totaltime
