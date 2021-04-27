@@ -1,3 +1,5 @@
+from timeit import default_timer as timerit
+
 class Scheduler:
   def schedule(factory, problemName, dispatchRule):
       starttime = timerit()
