@@ -1,3 +1,5 @@
+import heapq
+
 class EventQueue:
   queue=None
   time=-1
