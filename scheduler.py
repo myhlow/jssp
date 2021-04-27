@@ -1,5 +1,5 @@
 import time
-
+import dispatchingrule
 
 class Scheduler:
   def schedule(factory, problemName, dispatchRule):
