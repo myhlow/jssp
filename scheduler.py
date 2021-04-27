@@ -1,5 +1,5 @@
 import time
-import eventqueue 
+from eventqueue import *
 
 class DispatchingRule:
   factory=None
