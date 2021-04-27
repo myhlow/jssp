@@ -2,7 +2,7 @@ from timeit import default_timer as timerit
 
 class Scheduler:
   def schedule(factory, problemName, dispatchRule):
-      starttime = timerit()
+      starttime = timerit.timerit()
            
       if (dispatchRule == 'NN'):
           dispatchRule=NN_Rule(factory)
