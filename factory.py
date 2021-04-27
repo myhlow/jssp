@@ -440,7 +440,7 @@ class FDDMTWR_Rule(DispatchingRule):
 
 class Scheduler:
   def schedule(factory, eq, problemName, dispatchRule):
-      starttime = time.clock()
+      starttime = clock()
            
       if (dispatchRule == 'NN'):
           dispatchRule=NN_Rule(factory)
@@ -517,6 +517,6 @@ class Scheduler:
         eq.addEvent(op1)
       eq.run()
       makespan=eq.time
-      endtime = time.clock() 
+      endtime = clock() 
       totaltime = endtime - starttime
       return makespan,totaltime
