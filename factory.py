@@ -439,7 +439,7 @@ class FDDMTWR_Rule(DispatchingRule):
 
 
 class Scheduler:
-  def schedule(factory, problemName, dispatchRule):
+  def schedule(factory, eq, problemName, dispatchRule):
       starttime = time.clock()
            
       if (dispatchRule == 'NN'):
@@ -511,7 +511,6 @@ class Scheduler:
       else:
           print("No matching dispatching rule found!")
     
-      eq=factory.EventQueue()
       for j in factory.jobs:
         firstOp = j.ops[0]
         op1=OpArrival(0,firstOp)
