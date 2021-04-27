@@ -1,4 +1,4 @@
-from timeit import default_timer as timerit
+import time
 import heapq
 import enum
 
