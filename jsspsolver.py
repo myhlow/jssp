@@ -96,10 +96,10 @@ def MinimalJobshopSat(jobs_data, makespan):
 
     # Solve model.
     solver = cp_model.CpSolver()
-    status = solver.Solve(model)
+    #status = solver.Solve(model)
 
-    #solution_printer = VarArraySolutionPrinter()
-    #status = solver.SolveWithSolutionCallback(model, solution_printer)
+    solution_printer = VarArraySolutionPrinter()
+    status = solver.SolveWithSolutionCallback(model, solution_printer)
 
     if status == cp_model.OPTIMAL:
         # Create one list of assigned tasks per machine.
