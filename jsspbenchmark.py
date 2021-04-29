@@ -19,5 +19,6 @@ class JSSPBenchmark:
       'la40':1222,
       'orb08':899,
       'orb09':934,
-      'yn1':886
+      'yn1':886,
+      'wsc06':16
   }
