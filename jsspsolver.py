@@ -27,7 +27,7 @@ class VarArraySolutionPrinter(cp_model.CpSolverSolutionCallback):
     def solution_count(self):
         return self.__solution_count
 
-def SearchForAllSolutionsSampleSat(factory1,horizon):
+def GoogleORSATSolver(factory1,horizon):
     """Showcases calling the solver to search for all solutions."""
     # Creates the model.
     model = cp_model.CpModel()
