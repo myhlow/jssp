@@ -1,4 +1,5 @@
 import collections
+from ortools.sat.python import cp_model
 
 class VarArraySolutionPrinter(cp_model.CpSolverSolutionCallback):
     """Print intermediate solutions."""
