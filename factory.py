@@ -7,6 +7,7 @@ class Factory:
   jobs=None
   machines=None
   dispatchingRule=None
+  name=None
 
   def __init__(self):
     self.jobs=[]
@@ -45,7 +46,8 @@ class Factory:
   def setDispatchingRule(self,d):
     self.dispatchingRule=d
 
-  def readProblem(self,link):
+  def readProblem(self,link, name=""):
+    self.name = name
     #open JSSP problem file and read
     f = open(link, "r")
     line = 0
