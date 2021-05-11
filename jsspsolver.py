@@ -1,150 +1,84 @@
 import collections
 
-# Import Python wrapper for or-tools CP-SAT solver.
-from ortools.sat.python import cp_model
-
 class VarArraySolutionPrinter(cp_model.CpSolverSolutionCallback):
     """Print intermediate solutions."""
 
     def __init__(self):
         cp_model.CpSolverSolutionCallback.__init__(self)
         self.__solution_count = 0
+        self.start=t.perf_counter()
+        self.x = []
+        self.y = []
 
     def on_solution_callback(self):
         self.__solution_count += 1
-        print("Objective function: ",self.ObjectiveValue())
+        self.x.append(t.perf_counter()-self.start)
+        self.y.append(self.ObjectiveValue())
+        plt.xlabel("makespan")
+        plt.ylabel("time(s)")
+        plt.grid(axis = 'both')
+        plt.plot(self.x,self.y, color="black")
+        #plt.text(0.02, 0.5, "Hello", fontsize=14)
+        display.clear_output(wait=True)
+        display.display(plt.gcf())
+
+        #print("Objective function: ",self.ObjectiveValue())
 
     def solution_count(self):
         return self.__solution_count
 
-def MinimalJobshopSat(jobs_data, makespan):
-    """Minimal jobshop problem."""
-    # Create the model.
+def SearchForAllSolutionsSampleSat(factory1,horizon):
+    """Showcases calling the solver to search for all solutions."""
+    # Creates the model.
     model = cp_model.CpModel()
 
-    #jobs_data = [  # task = (machine_id, processing_time).
-    #    [(0, 3), (1, 2), (2, 2)],  # Job0
-    #    [(0, 2), (2, 1), (1, 4)],  # Job1
-    #    [(1, 4), (2, 3)]  # Job2
-    #]
-
-    #WSC data
-    #jobs_data = [
-    #  [(0,3),(1,5),(2,2)],
-    #  [(2,2),(0,3),(1,2)],
-    #  [(2,5),(0,6),(1,3)]
-    #]
-
-    # FTP06
-    #jobs_data = [
-    #[(2, 1), (0, 3), (1,  6), (3,  7),  (5,  3),  (4,  6)],
-    #[(1, 8), (2, 5), (4, 10), (5, 10),  (0, 10),  (3,  4)],
-    #[(2, 5), (3, 4), (5,  8), (0,  9),  (1, 10),  (4,  7)],
-    #[(1, 5), (0, 5), (2,  5), (3,  3),  (4,  8),  (5,  9)],
-    #[(2, 9), (1, 3), (4,  5), (5,  4),  (0,  3),  (3,  1)],
-    #[(1, 3), (3, 3), (5,  9), (0, 10),  (4,  4),  (2,  1)]
-    #]
-    
-    machines_count = 1 + max(task[0] for job in jobs_data for task in job)
-    all_machines = range(machines_count)
-
-    # Computes horizon dynamically as the sum of all durations.
-    #horizon = sum(task[1] for job in jobs_data for task in job)
-    horizon = makespan
-
-    # Named tuple to store information about created variables.
-    task_type = collections.namedtuple('task_type', 'start end interval')
-    # Named tuple to manipulate solution information.
-    assigned_task_type = collections.namedtuple('assigned_task_type',
-                                                'start job index duration')
-
     # Creates job intervals and add to the corresponding machine lists.
-    all_tasks = {}
-    machine_to_intervals = collections.defaultdict(list)
+    jobs = [ [] for j in range(factory1.numJobs()) ]
+    machines = [ [] for m in range(factory1.numMachines()) ]
 
-    for job_id, job in enumerate(jobs_data):
-        for task_id, task in enumerate(job):
-            machine = task[0]
-            duration = task[1]
-            suffix = '_%i_%i' % (job_id, task_id)
-            start_var = model.NewIntVar(0, horizon, 'start' + suffix)
-            end_var = model.NewIntVar(0, horizon, 'end' + suffix)
-            interval_var = model.NewIntervalVar(start_var, duration, end_var,
-                                                'interval' + suffix)
-            all_tasks[job_id, task_id] = task_type(start=start_var,
-                                                   end=end_var,
-                                                   interval=interval_var)
-            machine_to_intervals[machine].append(interval_var)
+    for j in range(factory1.numJobs()):
+      duration = 0
+      for o in range(factory1.numMachines()):
+        opString = 'J%iO%i' % (factory1.jobs[j].ops[o].jobID, factory1.jobs[j].ops[o].opID)
+        start = model.NewIntVar(duration, horizon, 'start' + opString)
+        end = model.NewIntVar(duration, horizon, 'end' + opString)
+        interval = model.NewIntervalVar(start, factory1.jobs[j].ops[o].processTime, end,'interval' + opString)
+        jobs[j].append([start,end])
+        machines[factory1.jobs[j].ops[o].machineID].append(interval)
+        duration=duration+factory1.jobs[j].ops[o].processTime
+    
+    # ensure that jobs processed by the same machine do not overlap
+    for m in range(factory1.numMachines()):
+      model.AddNoOverlap(machines[m])
 
-    # Create and add disjunctive constraints.
-    for machine in all_machines:
-        model.AddNoOverlap(machine_to_intervals[machine])
+    # ensure that operations within a job are precessed in order
+    for j in range(factory1.numJobs()):
+      for o in range(factory1.numMachines()-1):
+        # ensure the start time of the next operation
+        # is later or equal to the end time of the previous operation
+        model.Add(jobs[j][o+1][0]>=jobs[j][o][1])
 
-    # Precedences inside a job.
-    for job_id, job in enumerate(jobs_data):
-        for task_id in range(len(job) - 1):
-            model.Add(all_tasks[job_id, task_id +
-                                1].start >= all_tasks[job_id, task_id].end)
-
-    # Makespan objective.
     obj_var = model.NewIntVar(0, horizon, 'makespan')
-    model.AddMaxEquality(obj_var, [
-        all_tasks[job_id, len(job) - 1].end
-        for job_id, job in enumerate(jobs_data)
-    ])
+    model.AddMaxEquality(obj_var, [jobs[j][factory1.numMachines()-1][1] for j in range(factory1.numJobs())])
     model.Minimize(obj_var)
 
-    # Solve model.
+    # Create a solver and solve.
     solver = cp_model.CpSolver()
     #status = solver.Solve(model)
-
+  
     solution_printer = VarArraySolutionPrinter()
     status = solver.SolveWithSolutionCallback(model, solution_printer)
 
-    if status == cp_model.OPTIMAL:
-        # Create one list of assigned tasks per machine.
-        assigned_jobs = collections.defaultdict(list)
-        for job_id, job in enumerate(jobs_data):
-            for task_id, task in enumerate(job):
-                machine = task[0]
-                assigned_jobs[machine].append(
-                    assigned_task_type(start=solver.Value(
-                        all_tasks[job_id, task_id].start),
-                                       job=job_id,
-                                       index=task_id,
-                                       duration=task[1]))
+    print('Status = %s' % solver.StatusName(status))
 
-        # Create per machine output lines.
-        output = ''
-        for machine in all_machines:
-            # Sort by starting time.
-            assigned_jobs[machine].sort()
-            sol_line_tasks = 'Machine ' + str(machine) + ': '
-            sol_line = '           '
+    for m1 in factory1.machines:
+      for j in range(factory1.numJobs()):
+        for o in range(factory1.numMachines()):
+          if factory1.jobs[j].ops[o].machineID==m1.machineID:
+            factory1.jobs[j].ops[o].startTime = solver.Value(jobs[j][o][0])
+            factory1.jobs[j].ops[o].endTime = solver.Value(jobs[j][o][1])
+            #print(f"M{m1.machineID} J{j}{o} {solver.Value(jobs[j][o][0])} {solver.Value(jobs[j][o][1])} {factory1.jobs[j].ops[o].processTime}")
+        
+    print('Optimal Schedule Length: %i' % solver.ObjectiveValue())
 
-            for assigned_task in assigned_jobs[machine]:
-                name = 'job_%i_%i' % (assigned_task.job, assigned_task.index)
-                # Add spaces to output to align columns.
-                sol_line_tasks += '%-10s' % name
-
-                start = assigned_task.start
-                duration = assigned_task.duration
-                sol_tmp = '[%i,%i]' % (start, start + duration)
-                # Add spaces to output to align columns.
-                sol_line += '%-10s' % sol_tmp
-
-            sol_line += '\n'
-            sol_line_tasks += '\n'
-            output += sol_line_tasks
-            output += sol_line
-
-        # Finally print the solution found.
-        print('Optimal Schedule Length: %i' % solver.ObjectiveValue())
-        print(output)
-
-#for x in JSSPBenchmark.problems:
-#  factory1=Factory()
-#  factory1.readProblem('problems/'+x)
-  #factory1.show()
-#  print(x, JSSPBenchmark.problems[x])
-  #MinimalJobshopSat(factory1.get_google_jssp())
+#SearchForAllSolutionsSampleSat()
