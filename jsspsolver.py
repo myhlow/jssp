@@ -1,5 +1,6 @@
 import collections
 from ortools.sat.python import cp_model
+import time
 
 class VarArraySolutionPrinter(cp_model.CpSolverSolutionCallback):
     """Print intermediate solutions."""
@@ -13,17 +14,18 @@ class VarArraySolutionPrinter(cp_model.CpSolverSolutionCallback):
 
     def on_solution_callback(self):
         self.__solution_count += 1
-        self.x.append(t.perf_counter()-self.start)
+        elapsed_time = t.perf_counter()-self.start 
+        self.x.append(elapsed_time)
         self.y.append(self.ObjectiveValue())
-        plt.xlabel("makespan")
-        plt.ylabel("time(s)")
-        plt.grid(axis = 'both')
-        plt.plot(self.x,self.y, color="black")
+        #plt.xlabel("makespan")
+        #plt.ylabel("time(s)")
+        #plt.grid(axis = 'both')
+        #plt.plot(self.x,self.y, color="black")
         #plt.text(0.02, 0.5, "Hello", fontsize=14)
-        display.clear_output(wait=True)
-        display.display(plt.gcf())
+        #display.clear_output(wait=True)
+        #display.display(plt.gcf())
 
-        #print("Objective function: ",self.ObjectiveValue())
+        print("Time:", elapsed_time, " Objective function: ",self.ObjectiveValue())
 
     def solution_count(self):
         return self.__solution_count
