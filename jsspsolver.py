@@ -25,7 +25,7 @@ class VarArraySolutionPrinter(cp_model.CpSolverSolutionCallback):
         #display.clear_output(wait=True)
         #display.display(plt.gcf())
 
-        print('elapsed time %.3f makespan: %i', (elapsed_time, self.ObjectiveValue()) )
+        print('elapsed time %.3f makespan: %i' % (elapsed_time, self.ObjectiveValue()) )
 
     def solution_count(self):
         return self.__solution_count
