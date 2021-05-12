@@ -40,7 +40,8 @@ class Factory:
   def get_makespan(self):
     m = 0
     for j in range(self.numJobs()):
-      if self.jobs[j].ops[self.numMachines()-1].endTime>m:
+      if self.jobs[j].ops[self.numMachines()-1].endTime > m:
+        m = self.jobs[j].ops[self.numMachines()-1].endTime
     return m
 
   def reset(self):
