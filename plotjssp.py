@@ -35,7 +35,7 @@ def plotChart(factory):
   ax1.set_xlim(0, xlim) 
   
   # set the name of the chart to the problem name
-  ax1.set_title(factory.name)
+  ax1.set_title(factory.name+" makespan="+str(factory.get_makespan()))
   
   # Setting labels for x-axis and y-axis 
   ax1.set_xlabel('Time') 
