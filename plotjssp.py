@@ -34,6 +34,8 @@ def plotChart(factory):
   # Setting X-axis limits 
   ax1.set_xlim(0, xlim) 
          
+  ax1.set_title("Hello World")
+  print("Hello World")
   # Setting labels for x-axis and y-axis 
   ax1.set_xlabel('Time') 
   ax1.set_ylabel('Machines') 
