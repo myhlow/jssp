@@ -36,6 +36,13 @@ class Factory:
         jj.append((o.machineID, o.processTime))
       data.append(jj)
     return data
+  
+  def get_makespan(self):
+    m = 0
+    for j in range(self.numJobs()):
+      if self.jobs[j].o[self.numMachines()].endTime>m:
+        m = self.jobs[j].o[self.numMachines()].endTime
+    return m
 
   def reset(self):
     for j in self.jobs:
