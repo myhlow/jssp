@@ -60,6 +60,17 @@ def GoogleORSATSolver(factory1,horizon):
         # ensure the start time of the next operation
         # is later or equal to the end time of the previous operation
         model.Add(jobs[j][o+1][0]>=jobs[j][o][1])
+        
+    # constraint start time of operation in a job as the sum of its predecessor
+    # process time
+    for j in range(factory1.numJobs()):
+      cumulativeTime=0
+      for o in range(0, factory1.numMachines()):
+        # ensure the start time of the next operation
+        # is later or equal to the end time of the previous operation
+        model.Add(jobs[j][o][0]>=cumulativeTime)
+        model.Add(jobs[j][o][1]>=cumulativeTime+factory1.jobs[j].ops[o].processTime)
+        cumulativeTime=cumulativeTime+factory1.jobs[j].ops[o].processTime
 
     obj_var = model.NewIntVar(0, horizon, 'makespan')
     model.AddMaxEquality(obj_var, [jobs[j][factory1.numMachines()-1][1] for j in range(factory1.numJobs())])
