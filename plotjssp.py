@@ -33,9 +33,10 @@ def plotChart(factory):
   
   # Setting X-axis limits 
   ax1.set_xlim(0, xlim) 
-         
-  ax1.set_title("Hello World")
-  print("Hello World")
+  
+  # set the name of the chart to the problem name
+  ax1.set_title(factory.name)
+  
   # Setting labels for x-axis and y-axis 
   ax1.set_xlabel('Time') 
   ax1.set_ylabel('Machines') 
