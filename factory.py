@@ -258,5 +258,5 @@ class Machine:
   def toString(self):
     print("Machine",self.machineID, self.status, end=" [")
     for o in self.queue:
-      print(f"(J{o.jobID} O{o.opID} A{o.availableTime} P{o.processTime})",end=" ")
+      print(f"(J{o.jobID} O{o.opID} A{o.availableTime} PT{o.processTime} PR{o.priority})",end=" ")
     print("]")
