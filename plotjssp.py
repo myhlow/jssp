@@ -53,7 +53,10 @@ def plotChart(factory):
   #color=['#%02X%02X%02X' % (r(), r(), r()) for x in range(factory.numJobs())]  
   #print(color)
   #color=['#%02X%02X%02X' % (x, r(), r()) for x in range(0,255,int(255/factory.numJobs()))]  
-  color = [plt.cm.tab20c(i/float(factory.numJobs()-1)) for i in range(factory.numJobs())]
+  
+  #setup color pallet
+  # possible color pallets Pastel1/Pastel2/Paired/Accent/Dark2/Set1/Set2/Set3/tab10/tab20/tab20b/tab20c
+  color = [plt.cm.Paired(i/float(factory.numJobs()-1)) for i in range(factory.numJobs())]
   # Setting graph attribute 
   ax1.grid(True) 
     
