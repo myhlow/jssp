@@ -53,7 +53,7 @@ def plotChart(factory):
   #color=['#%02X%02X%02X' % (r(), r(), r()) for x in range(factory.numJobs())]  
   #print(color)
   #color=['#%02X%02X%02X' % (x, r(), r()) for x in range(0,255,int(255/factory.numJobs()))]  
-  color = [plt.cm.tab20c(i/float(len(factory.numJobs())-1)) for i in range(len(factory.numJobs()))]
+  color = [plt.cm.tab20c(i/float(factory.numJobs()-1)) for i in range(factory.numJobs())]
   # Setting graph attribute 
   ax1.grid(True) 
     
