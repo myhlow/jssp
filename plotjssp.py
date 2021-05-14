@@ -58,7 +58,7 @@ def plotChart(factory):
   ax1.grid(True) 
     
   # Declaring a bar in schedule 
-  for j in range(factory.numJobs()):
+  for j in range(factory.numJobs()-1,-1):
     for o in factory.jobs[j].ops:
       ax1.broken_barh([(o.startTime, o.processTime)], ((o.machineID+1)*hspace-(hspace/2)+1, hspace-2), facecolors =(color[j]), edgecolors=('tab:grey')) 
  
