@@ -60,9 +60,13 @@ class Factory:
     line = 0
     txt = f.readline()
 
+    #skip over the first few comment lines
+    while txt.startswith("#"):
+      txt = f.readline()
+
     i=0
     while txt != "":
-      if line == 4:
+      if line == 0:
         #read in number of jobs and machines
         j, m = txt.split()
         numJobs = int(j)
@@ -74,7 +78,7 @@ class Factory:
 
         txt = f.readline()
         #print("Num Jobs",numJobs,"Num Machines",numMachines)
-      elif line > 4:
+      elif line > 0:
         #read in operations for each job
         arr = [int(n) for n in txt.split()]
         machineTime = list(zip(arr[::2], arr[1::2]))
